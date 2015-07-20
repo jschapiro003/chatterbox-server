@@ -12,6 +12,8 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var messageData = {results: []};
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -33,25 +35,30 @@ var requestHandler = function(request, response) {
 
   var statusCode = 200;
 
-  
+  //console.log(response.statusCode);
 
   if (request.method === "POST") {
     var body = "";
     statusCode = 201;
+
+
     request.setEncoding('utf8');
+
+
     request.on("data", function(item){
       body += item;
     })
 
-    var requestJSON;
+    
     request.on("end", function(){
-      try {
-        requestJSON = JSON.stringify(body);
-      } catch (e) {
-        requestJSON = "Corrupt JSON";
-      }
+      console.log(body);
+      var requestJSON = {};
 
-      console.log(requestJSON[username]);
+      requestJSON = JSON.parse(body);
+
+      
+      messageData.results.push(requestJSON);
+      console.log('requestJSON ->>>>>>>>>>>>>>>>>>>>>>>' +requestJSON);
     })
 
   }
@@ -78,13 +85,9 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
 
   if (request.url === '/') {
-    
-
     response.write("HI");
   } else if (request.url === '/classes/messages'){
-    var someJSON = {results: []};
-    response.write(JSON.stringify(someJSON));
-
+    response.write(JSON.stringify(messageData));
   }
 
   response.end();
