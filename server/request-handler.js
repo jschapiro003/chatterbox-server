@@ -38,6 +38,7 @@ var requestHandler = function(request, response) {
   //console.log(response.statusCode);
 
   if (request.method === "POST") {
+    console.log('NEW MESSAGE FROM CLIENT!!!')
     var body = "";
     statusCode = 201;
 
@@ -58,6 +59,7 @@ var requestHandler = function(request, response) {
 
       
       messageData.results.push(requestJSON);
+      console.log(messageData);
     })
 
   }
