@@ -74,7 +74,7 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+  
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -83,12 +83,17 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-
+  
+  response.writeHead(statusCode, headers);
   if (request.url === '/') {
     response.write("HI");
   } else if (request.url === '/classes/messages'){
     response.write(JSON.stringify(messageData));
+  } else {
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
   }
+  
 
   response.end();
 };
