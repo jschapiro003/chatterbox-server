@@ -5,15 +5,13 @@ $(function() {
   app = {
 //TODO: The current 'addFriend' function just adds the class 'friend'
 //to all messages sent by the user
-    server: 'https://api.parse.com/1/classes/chatterbox/',
+    server: 'http://127.0.0.1:3000/classes/messages',
     username: 'anonymous',
-    roomname: 'lobby',
-    lastMessageId: 0,
-    friends: {},
+    roomname: 'room1',
 
     init: function() {
       // Get username
-      app.username = window.location.search.substr(10);
+      //app.username = window.location.search.substr(10);
 
       // Cache jQuery selectors
       app.$main = $('#main');
@@ -60,28 +58,29 @@ $(function() {
         url: app.server,
         type: 'GET',
         contentType: 'application/json',
-        data: { order: '-createdAt'},
+        //data: { order: '-createdAt'},
         success: function(data) {
           console.log('chatterbox: Messages fetched');
-
+          data = JSON.parse(data);
+          console.log(data.results[0].message)
           // Don't bother if we have nothing to work with
           if (!data.results || !data.results.length) { return; }
 
           // Get the last message
-          var mostRecentMessage = data.results[data.results.length-1];
+          var mostRecentMessage = data.results[data.results.length-1].message;
           var displayedRoom = $('.chat span').first().data('roomname');
           app.stopSpinner();
           // Only bother updating the DOM if we have a new message
-          if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
+          
             // Update the UI with the fetched rooms
-            app.populateRooms(data.results);
+           // app.populateRooms(data.results);
 
             // Update the UI with the fetched messages
             app.populateMessages(data.results, animate);
 
             // Store the ID of the most recent message
-            app.lastMessageId = mostRecentMessage.objectId;
-          }
+
+          
         },
         error: function(data) {
           console.error('chatterbox: Failed to fetch messages');
@@ -93,11 +92,12 @@ $(function() {
     },
     populateMessages: function(results, animate) {
       // Clear existing messages
-
+      console.log(results)
       app.clearMessages();
       app.stopSpinner();
       if (Array.isArray(results)) {
         // Add all fetched messages
+        console.log('adding message')
         results.forEach(app.addMessage);
       }
 
@@ -144,25 +144,26 @@ $(function() {
         data.roomname = 'lobby';
 
       // Only add messages that are in our current room
-      if (data.roomname === app.roomname) {
+      // debugger;
         // Create a div to hold the chats
         var $chat = $('<div class="chat"/>');
 
         // Add in the message data using DOM methods to avoid XSS
         // Store the username in the element's data
         var $username = $('<span class="username"/>');
+        //debugger;
         $username.text(data.username+': ').attr('data-username', data.username).attr('data-roomname',data.roomname).appendTo($chat);
 
         // Add the friend class
-        if (app.friends[data.username] === true)
-          $username.addClass('friend');
+        //if (app.friends[data.username] === true)
+          //$username.addClass('friend');
 
         var $message = $('<br><span/>');
-        $message.text(data.text).appendTo($chat);
+        $message.text(data.message).appendTo($chat);
 
         // Add the message to the UI
         app.$chats.append($chat);
-      }
+      
     },
     addFriend: function(evt) {
       var username = $(evt.currentTarget).attr('data-username');

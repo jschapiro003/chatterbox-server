@@ -12,7 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var messageData = {results: []};
+var messageData = {results: [{username:'test',message:'test message'}]};
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -58,7 +58,6 @@ var requestHandler = function(request, response) {
 
       
       messageData.results.push(requestJSON);
-      console.log('requestJSON ->>>>>>>>>>>>>>>>>>>>>>>' +requestJSON);
     })
 
   }
@@ -85,16 +84,20 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
   
   response.writeHead(statusCode, headers);
-  if (request.url === '/') {
-    response.write("HI");
-  } else if (request.url === '/classes/messages'){
-    response.write(JSON.stringify(messageData));
-  } else {
-    statusCode = 404;
-    response.writeHead(statusCode, headers);
+  if (request.method === "GET"){
+    if (request.url === '/') {
+      response.write("HI");
+    } else if (request.url === '/classes/messages'){
+      response.write(JSON.stringify(messageData));
+    } else if (request.url === '/classes/room1'){
+      console.log('------------> room request')   
+      response.write(JSON.stringify(messageData));
+    } else {
+      statusCode = 404;
+      response.writeHead(statusCode, headers);
+    }
   }
-  
-
+  //console.log('STATUS CODE:' + statusCode);
   response.end();
 };
 
