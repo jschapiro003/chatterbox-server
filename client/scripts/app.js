@@ -11,7 +11,7 @@ $(function() {
 
     init: function() {
       // Get username
-      //app.username = window.location.search.substr(10);
+      app.username = prompt("m8 plz enter username:", "Username");
 
       // Cache jQuery selectors
       app.$main = $('#main');
@@ -64,6 +64,7 @@ $(function() {
           data = JSON.parse(data);
           console.log(data.results[0].message)
           // Don't bother if we have nothing to work with
+          data.results.reverse();
           if (!data.results || !data.results.length) { return; }
 
           // Get the last message
